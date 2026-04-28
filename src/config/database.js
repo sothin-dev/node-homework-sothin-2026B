@@ -1,0 +1,12 @@
+import mysql from 'mysql2/promise';
+
+const db = await mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "homework-node-sothin"
+});
+
+console.log("MySQL connected");
+
+export default db;
