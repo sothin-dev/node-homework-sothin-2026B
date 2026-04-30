@@ -13,7 +13,7 @@ export class UserController {
             res.status(200).json({
                 success: true,
                 message: "Get all user",
-                data: [users]
+                data: users
             });
         } catch (err) {
             res.status(500).json({
