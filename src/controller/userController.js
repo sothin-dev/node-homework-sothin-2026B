@@ -1,6 +1,7 @@
 import { User } from "../model/user.js";
+import { baseController } from "./baseController.js";
 
-export class UserController {
+export class UserController extends baseController {
 
     /**
      * name: index
@@ -10,16 +11,9 @@ export class UserController {
     async index(req, res) {
         try {
             const users = await User.getAll();
-            res.status(200).json({
-                success: true,
-                message: "Get all user",
-                data: users
-            });
+            this.success(res, "List of users", users)
         } catch (err) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: err.message
-            });
+            this.error(res, 500, "Internal Server Error")
         }
     }
 
@@ -36,17 +30,12 @@ export class UserController {
             const user = await User.findById(id);
 
             if (!user) {
-                return res.status(404).json({
-                    message: "User not found"
-                });
+                this.error(res, 404, "User not found")
             }
 
-            res.status(200).json(user);
+            this.success(res, "user data", user)
         } catch (err) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: err.message
-            });
+            this.error(res, 500, "Internal server error")
         }
     }
 
@@ -62,26 +51,19 @@ export class UserController {
             const { name } = req.body;
 
             if (!name) {
-                return res.status(400).json({
-                    message: "Name is required"
-                });
+                this.error(res, 400, "Name is required!")
             }
 
             const result = await User.create(name);
+            const user = {
+                id: result.insertId,
+                name: name
+            }
 
-            res.status(201).json({
-                message: "Created successfully",
-                data: {
-                    id: result.insertId,
-                    name
-                }
-            });
+            this.success(res, "user created", user, 201)
 
         } catch (err) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: err.message
-            });
+            this.error(res, 500, "Internal server error")
         }
     }
 
@@ -98,31 +80,21 @@ export class UserController {
             const { name } = req.body;
 
             if (!name) {
-                return res.status(400).json({
-                    message: "Name is required"
-                });
+                this.error(res, 400, "Name is required!")
             }
 
             const user = await User.findById(id);
 
             if (!user) {
-                return res.status(404).json({
-                    message: "User not found"
-                });
+                this.error(res, 404, "User not found")
             }
 
             await User.update(id, name);
 
-            res.status(200).json({
-                message: "Updated successfully",
-                data: { id, name }
-            });
+            this.success(res, "user updated", user)
 
         } catch (err) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: err.message
-            });
+            this.error(res, 500, "Internal server error")
         }
     }
 
@@ -140,22 +112,15 @@ export class UserController {
             const user = await User.findById(id);
 
             if (!user) {
-                return res.status(404).json({
-                    message: "User not found"
-                });
+                this.error(res, 404, "User not found")
             }
 
             await User.delete(id);
 
-            res.status(200).json({
-                message: "Deleted successfully"
-            });
+            this.success(res, "user is deleted", null)
 
         } catch (err) {
-            res.status(500).json({
-                message: "Internal Server Error",
-                error: err.message
-            });
+            this.error(res, 500, "Internal server error")
         }
     }
 }
