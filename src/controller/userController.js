@@ -2,10 +2,19 @@ import { User } from "../model/user.js";
 
 export class UserController {
 
+    /**
+     * name: index
+     * @param {req, res}
+     * dsc: get all users as list
+     */
     async index(req, res) {
         try {
             const users = await User.getAll();
-            res.status(200).json(users);
+            res.status(200).json({
+                success: true,
+                message: "Get all user",
+                data: [users]
+            });
         } catch (err) {
             res.status(500).json({
                 message: "Internal Server Error",
@@ -14,6 +23,13 @@ export class UserController {
         }
     }
 
+    /**
+     * name: show
+     * @param {*} req : request
+     * @param {*} res : respond
+     * @returns 
+     * dsc: show detail information for a user by id
+     */
     async show(req, res) {
         try {
             const { id } = req.params;
@@ -34,6 +50,13 @@ export class UserController {
         }
     }
 
+    /**
+     * name: store
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * dsc: create a user with name.
+     */
     async store(req, res) {
         try {
             const { name } = req.body;
@@ -62,6 +85,13 @@ export class UserController {
         }
     }
 
+    /**
+     * name: update
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * dsc: update user with name
+     */
     async update(req, res) {
         try {
             const { id } = req.params;
@@ -96,6 +126,13 @@ export class UserController {
         }
     }
 
+    /**
+     * name: delete
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * dsc: delete user from recode
+     */
     async delete(req, res) {
         try {
             const { id } = req.params;
