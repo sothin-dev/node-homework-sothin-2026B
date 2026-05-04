@@ -47,25 +47,27 @@ export class UserController extends baseController {
      * dsc: create a user with name.
      */
     async store(req, res) {
-        try {
-            const { name } = req.body;
+    try {
+        const { name } = req.body;
 
-            if (!name) {
-                this.error(res, 400, "Name is required!")
-            }
-
-            const result = await User.create(name);
-            const user = {
-                id: result.insertId,
-                name: name
-            }
-
-            this.success(res, "user created", user, 201)
-
-        } catch (err) {
-            this.error(res, 500, "Internal server error")
+        // ❌ MUST return
+        if (!name) {
+            return this.error(res, 400, "Name is required!");
         }
+
+        const result = await User.create({ name });
+
+        const user = {
+            id: result.insertId,
+            name: name
+        };
+
+        return this.success(res, "User created", user, 201);
+
+    } catch (err) {
+        return this.error(res, 500, "Internal server error");
     }
+}
 
     /**
      * name: update
@@ -75,28 +77,31 @@ export class UserController extends baseController {
      * dsc: update user with name
      */
     async update(req, res) {
-        try {
-            const { id } = req.params;
-            const { name } = req.body;
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
 
-            if (!name) {
-                this.error(res, 400, "Name is required!")
-            }
-
-            const user = await User.findById(id);
-
-            if (!user) {
-                this.error(res, 404, "User not found")
-            }
-
-            await User.update(id, name);
-
-            this.success(res, "user updated", user)
-
-        } catch (err) {
-            this.error(res, 500, "Internal server error")
+        if (!name) {
+            return this.error(res, 400, "Name is required!");
         }
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            return this.error(res, 404, "User not found");
+        }
+
+        await User.update(id, { name });
+
+        return this.success(res, "User updated", {
+            id,
+            name
+        });
+
+    } catch (err) {
+        return this.error(res, 500, "Internal server error");
     }
+}
 
     /**
      * name: delete

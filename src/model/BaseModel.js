@@ -1,5 +1,3 @@
-import db from "../config/database.js";
-
 export class BaseModel {
     constructor() {
         if (new.target === BaseModel) {
@@ -7,6 +5,7 @@ export class BaseModel {
         }
     }
 
+    // must define in child
     static get table() {
         throw new Error("table must be implemented");
     }
@@ -15,12 +14,7 @@ export class BaseModel {
         return [];
     }
 
-    static checkTable() {
-        if (!this.table) {
-            throw new Error("table must be implemented");
-        }
-    }
-
+    
     static filterData(data) {
         const result = {};
 
@@ -33,59 +27,24 @@ export class BaseModel {
         return result;
     }
 
-    static async getAll() {
-        this.checkTable();
 
-        const sql = `select * from ${this.table}`;
-        const [rows] = await db.query(sql);
-        return rows;
+    getAll(){
+        throw new Error("getAll() must be implement")
     }
 
-    static async findById(id) {
-        this.checkTable();
-
-        const sql = `select * from ${this.table} where id = ?`;
-        const [rows] = await db.query(sql, [id]);
-        return rows[0] ?? null;
+    findById(id){
+        throw new Error("findById() must be implement")
     }
 
-    static async create(data) {
-        this.checkTable();
-
-        const values = this.filterData(data);
-        const fields = Object.keys(values);
-
-        if (fields.length === 0) {
-            throw new Error("No data to create");
-        }
-
-        const placeholders = fields.map(() => "?").join(", ");
-        const sql = `insert into ${this.table} (${fields.join(", ")}) values (${placeholders})`;
-        const [result] = await db.query(sql, Object.values(values));
-        return result;
+    create(data){
+        throw new Error("create() must be implement")
     }
 
-    static async update(id, data) {
-        this.checkTable();
-
-        const values = this.filterData(data);
-        const fields = Object.keys(values);
-
-        if (fields.length === 0) {
-            throw new Error("No data to update");
-        }
-
-        const setSql = fields.map((field) => `${field} = ?`).join(", ");
-        const sql = `update ${this.table} set ${setSql} where id = ?`;
-        const [result] = await db.query(sql, [...Object.values(values), id]);
-        return result;
+    update(id, data){
+        throw new Error("update() must be implement")
     }
 
-    static async delete(id) {
-        this.checkTable();
-
-        const sql = `delete from ${this.table} where id = ?`;
-        const [result] = await db.query(sql, [id]);
-        return result;
+    delete(id){
+        throw new Error("delete() must be implement")
     }
 }

@@ -1,6 +1,8 @@
+import db from "../config/database.js";
 import { BaseModel } from "./BaseModel.js";
 
 export class User extends BaseModel {
+
     static get table() {
         return "users";
     }
@@ -10,46 +12,59 @@ export class User extends BaseModel {
     }
 
     static async getAll() {
-        return super.getAll();
+        const sql = `SELECT * FROM ${this.table}`;
+        const [rows] = await db.query(sql);
+        return rows;
     }
 
-    /**
-     * name: create
-     * @param: {*} callback, name
-     * Create user with name
-     */
-    static async create(name) {
-        return super.create({ name });
-    }
-
-    /**
-     * name: update
-     * @param {*} id 
-     * @param {*} name 
-     * @param {*} callback 
-     * use for update user data
-     */
-    static async update(id, name) {
-        return super.update(id, { name });
-    }
-
-    /**
-     * name: delete
-     * @param {*} id 
-     * @param {*} callback 
-     * use for delete user
-     */
-    static async delete(id) {
-        return super.delete(id);
-    }
-
-    /**
-     * name: find
-     * @param {*} id 
-     * @param {*} callback 
-     * filter a user 
-     */
     static async findById(id) {
-        return super.findById(id);
+        const sql = `SELECT * FROM ${this.table} WHERE id = ?`;
+        const [rows] = await db.query(sql, [id]);
+        return rows[0] ?? null;
+    }
+
+    static async create(data) {
+        const values = this.filterData(data);
+        const fields = Object.keys(values);
+
+        if (fields.length === 0) {
+            throw new Error("No data to create");
+        }
+
+        const placeholders = fields.map(() => "?").join(", ");
+
+        const sql = `
+            INSERT INTO ${this.table} (${fields.join(", ")})
+            VALUES (${placeholders})
+        `;
+
+        const [result] = await db.query(sql, Object.values(values));
+        return result;
+    }
+
+    static async update(id, data) {
+        const values = this.filterData(data);
+        const fields = Object.keys(values);
+
+        if (fields.length === 0) {
+            throw new Error("No data to update");
+        }
+
+        const setSql = fields.map(f => `${f} = ?`).join(", ");
+
+        const sql = `
+            UPDATE ${this.table}
+            SET ${setSql}
+            WHERE id = ?
+        `;
+
+        const [result] = await db.query(sql, [...Object.values(values), id]);
+        return result;
+    }
+
+    static async delete(id) {
+        const sql = `DELETE FROM ${this.table} WHERE id = ?`;
+        const [result] = await db.query(sql, [id]);
+        return result;
     }
 }
