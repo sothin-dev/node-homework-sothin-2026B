@@ -1,4 +1,4 @@
-import { User } from "../model/user.js";
+import { User } from "../model/User.js";
 import { baseController } from "./baseController.js";
 
 export class UserController extends baseController {

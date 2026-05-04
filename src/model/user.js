@@ -1,10 +1,16 @@
-import db from "../config/database.js";
+import { BaseModel } from "./BaseModel.js";
 
-export class User {
+export class User extends BaseModel {
+    static get table() {
+        return "users";
+    }
+
+    static get fillable() {
+        return ["name"];
+    }
+
     static async getAll() {
-        const sql = "select * from users";
-        const [rows] = await db.query(sql);
-        return rows;
+        return super.getAll();
     }
 
     /**
@@ -13,9 +19,7 @@ export class User {
      * Create user with name
      */
     static async create(name) {
-        const sql = "insert into users (name) values(?)";
-        const [result] = await db.query(sql, [name]);
-        return result;
+        return super.create({ name });
     }
 
     /**
@@ -26,9 +30,7 @@ export class User {
      * use for update user data
      */
     static async update(id, name) {
-        const sql = "update users set name = ? where id = ?";
-        const [result] = await db.query(sql, [name, id]);
-        return result;
+        return super.update(id, { name });
     }
 
     /**
@@ -38,9 +40,7 @@ export class User {
      * use for delete user
      */
     static async delete(id) {
-        const sql = "delete from users where id = ?";
-        const [result] = await db.query(sql, [id]);
-        return result;
+        return super.delete(id);
     }
 
     /**
@@ -50,8 +50,6 @@ export class User {
      * filter a user 
      */
     static async findById(id) {
-        const sql = "select * from users where id = ?";
-        const [rows] = await db.query(sql, [id]);
-        return rows[0] ?? null;
+        return super.findById(id);
     }
 }
